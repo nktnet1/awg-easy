@@ -33,7 +33,20 @@ RUN apk add --no-cache \
     dumb-init \
     iptables \
     iptables-legacy \
-    wireguard-tools
+    curl \
+    bash
+
+ARG AMNEZIAWG_VERSION=v1.0.20241018
+ARG AMNEZIAWG_TOOL_VERSION=alpine-3.19-amneziawg-tools
+ARG AMNEZIAWG_URL=https://github.com/amnezia-vpn/amneziawg-tools/releases/download/${AMNEZIAWG_VERSION}/${AMNEZIAWG_TOOL_VERSION}.zip
+
+# Install amnezia-tools
+RUN curl -L ${AMNEZIAWG_URL} -o /tmp/${AMNEZIAWG_TOOL_VERSION}.zip && \
+    unzip /tmp/${AMNEZIAWG_TOOL_VERSION}.zip -d /tmp && \
+    mv /tmp/${AMNEZIAWG_TOOL_VERSION}/awg /tmp/${AMNEZIAWG_TOOL_VERSION}/awg-quick /usr/local/bin/ && \
+    chmod 755 /usr/local/bin/awg /usr/local/bin/awg-quick && \
+    rm -rf /tmp/${AMNEZIAWG_TOOL_VERSION} /tmp/${AMNEZIAWG_TOOL_VERSION}.zip
+
 
 # Use iptables-legacy
 RUN update-alternatives --install /usr/sbin/iptables iptables /usr/sbin/iptables-legacy 10 --slave /usr/sbin/iptables-restore iptables-restore /usr/sbin/iptables-legacy-restore --slave /usr/sbin/iptables-save iptables-save /usr/sbin/iptables-legacy-save
